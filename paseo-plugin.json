@@ -1,0 +1,15 @@
+{
+  "id": "agent-tree",
+  "name": "Agent Tree",
+  "description": "Shows agents as a tree of machines, projects, agents and subagents in the sidebar.",
+  "translations": {
+    "fr": {
+      "name": "Arbre d'agents",
+      "description": "Affiche les agents en arbre machines, projets, agents et sous-agents dans la barre latérale."
+    }
+  },
+  "media": [],
+  "requirements": {
+    "paseo": ">=0.15.0"
+  }
+}

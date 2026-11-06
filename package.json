@@ -1,0 +1,38 @@
+{
+  "name": "paseo-agent-tree",
+  "version": "0.1.0",
+  "description": "Shows agents as a tree of machines, projects, agents and subagents in the Paseo sidebar.",
+  "license": "MIT",
+  "author": "Louis Moret",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/louisssmrt/paseo-agent-tree.git"
+  },
+  "files": [
+    "paseo-plugin.json",
+    "OVERVIEW.md",
+    "OVERVIEW.*.md",
+    "index.client.ts",
+    "index.client.tsx",
+    "index.server.ts",
+    "index.server.tsx",
+    "client/",
+    "server/",
+    "shared/"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --no-warnings test/hide.test.ts && node --no-warnings test/rows.test.ts && node --no-warnings test/settings-usage.ts",
+    "debug:live": "node --no-warnings test/debug-live.ts --rows"
+  },
+  "devDependencies": {
+    "@getpaseo/plugin": "0.15.0",
+    "@tanstack/react-query": "^5.90.11",
+    "@types/node": "^24.19.2",
+    "@types/react": "~19.2.0",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "typescript": "^5.9.3",
+    "zod": "^4.4.3"
+  }
+}
