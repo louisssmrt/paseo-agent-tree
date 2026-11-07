@@ -39,6 +39,8 @@ export const arbreSettings = defineSettings({
     subagentCount: z.boolean().default(true),
     /** Marge au-dessus de l'arbre dans la barre latérale, en px. */
     topMargin: z.number().default(16),
+    /** Mode démo (captures d'écran) : données synthétiques à la place des vraies. */
+    demo: z.boolean().default(false),
   }),
 });
 

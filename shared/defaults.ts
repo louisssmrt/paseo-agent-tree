@@ -18,6 +18,7 @@ export type ArbrePrefs = {
   statusDots: boolean;
   subagentCount: boolean;
   topMargin: number;
+  demo: boolean;
 };
 
 export const DEFAULT_PREFS: ArbrePrefs = {
@@ -38,6 +39,7 @@ export const DEFAULT_PREFS: ArbrePrefs = {
   statusDots: true,
   subagentCount: true,
   topMargin: 16,
+  demo: false,
 };
 
 /** Palette proposée dans la page de réglages (sobre, lisible sur fond clair et sombre). */

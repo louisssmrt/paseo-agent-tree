@@ -1,12 +1,15 @@
 import { getPaseoClient, useHosts, type PluginScreenProps } from "@getpaseo/plugin/client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { selectTree } from "../shared/demo";
 import { decorateHosts, flattenOptions, treeOptions } from "../shared/options";
 import { buildTree, flattenRows, type HostNode, type Row } from "../shared/tree";
 import { useHostInputs } from "./feed";
 import { useArbrePrefs } from "./prefs";
 import { useT } from "./i18n";
 import { Rows } from "./rows";
+
+type Theme = PluginScreenProps["theme"];
 import { isWeb } from "./web";
 
 /**
@@ -44,6 +47,16 @@ export function useHostLabels(online: readonly string[]): { labels: ReadonlyMap<
   return { labels, selfId };
 }
 
+/** Bandeau discret : on ne confond jamais la démo avec de vrais agents. */
+export function DemoBanner({ theme }: { theme: Theme }) {
+  const t = useT();
+  return (
+    <View style={{ alignSelf: "flex-start", marginHorizontal: 10, marginBottom: 4, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, borderWidth: 1, borderColor: theme.colors.border }}>
+      <Text style={{ color: theme.colors.foregroundMuted, fontSize: 11 }}>{t("demoBanner")}</Text>
+    </View>
+  );
+}
+
 /** Libellés de lignes d'état traduits. */
 export function rowLabels(t: ReturnType<typeof useT>) {
   return { loading: t("loading"), empty: t("empty"), unreachable: t("unreachable"), offline: t("offline") };
@@ -53,21 +66,22 @@ export function rowLabels(t: ReturnType<typeof useT>) {
 export function useArbre() {
   const hosts = useHosts();
   const { prefs, persisted, setOpen, setShowTemporary, setSidebarTree, setReplaceNative } = useArbrePrefs();
-  const onlineIds = useMemo(() => hosts.filter((h) => h.status === "online").map((h) => h.serverId).sort(), [hosts]);
+  const onlineIds = useMemo(() => (prefs.demo ? [] : hosts).filter((h) => h.status === "online").map((h) => h.serverId).sort(), [hosts, prefs.demo]);
   const { labels, selfId } = useHostLabels(onlineIds);
   const refs = useMemo(
-    () => hosts.map((h) => ({ serverId: h.serverId, label: labels.get(h.serverId) ?? h.label, online: h.status === "online" })),
-    [hosts, labels],
+    () => (prefs.demo ? [] : hosts).map((h) => ({ serverId: h.serverId, label: labels.get(h.serverId) ?? h.label, online: h.status === "online" })),
+    [hosts, labels, prefs.demo],
   );
   const inputs = useHostInputs(refs, { includeArchived: prefs.archived === "dim", fetchTasks: prefs.showSubagents });
-  const tree = useMemo<HostNode[]>(() => buildTree(decorateHosts(inputs, prefs, selfId), treeOptions(prefs)), [inputs, prefs, selfId]);
-  return { tree, prefs, persisted, setOpen, setShowTemporary, setSidebarTree, setReplaceNative };
+  // En démo, les entrées réelles ne sont ni lues (aucun flux) ni affichées.
+  const { tree, toggled } = useMemo(() => selectTree(prefs, () => buildTree(decorateHosts(inputs, prefs, selfId), treeOptions(prefs))), [inputs, prefs, selfId]);
+  return { tree, toggled, prefs, persisted, setOpen, setShowTemporary, setSidebarTree, setReplaceNative };
 }
 
 export function Arbre({ theme, layout, navigation }: PluginScreenProps) {
-  const { tree, prefs, persisted, setOpen, setShowTemporary, setSidebarTree, setReplaceNative } = useArbre();
+  const { tree, toggled, prefs, persisted, setOpen, setShowTemporary, setSidebarTree, setReplaceNative } = useArbre();
   const t = useT();
-  const rows = useMemo(() => flattenRows(tree, flattenOptions(prefs, rowLabels(t))), [tree, prefs, t]);
+  const rows = useMemo(() => flattenRows(tree, { ...flattenOptions(prefs, rowLabels(t)), toggled }), [tree, toggled, prefs, t]);
   const hidden = tree.reduce((n, h) => n + h.hiddenAgents, 0);
   const errors = tree.flatMap((h) => (h.error ? [`${h.label} : ${h.error}`] : []));
 
@@ -95,6 +109,10 @@ export function Arbre({ theme, layout, navigation }: PluginScreenProps) {
   const toggle = (row: Row) => setOpen(row.key, !row.expanded);
   const press = (row: Row) => {
     if (row.kind === "task" && !row.agentId) return;
+    if (prefs.demo) {
+      if (!row.agentId) toggle(row); // démo : un agent ne s'ouvre pas, les dépliages marchent
+      return;
+    }
     if (row.agentId) navigation?.openAgent({ agentId: row.agentId, serverId: row.serverId });
     else toggle(row);
   };
@@ -106,6 +124,7 @@ export function Arbre({ theme, layout, navigation }: PluginScreenProps) {
         {isWeb ? chip(t("replaceNative"), prefs.replaceNative, () => setReplaceNative(!prefs.replaceNative)) : null}
         {chip(t("treeInSidebar"), prefs.sidebarTree, () => setSidebarTree(!prefs.sidebarTree))}
       </View>
+      {prefs.demo ? <DemoBanner theme={theme} /> : null}
       {persisted ? null : <Text style={s.note}>{t("memoryOnly")}</Text>}
       {errors.map((e) => (
         <Text key={e} style={s.err} numberOfLines={2}>

@@ -107,6 +107,11 @@ export function ArbreSettings({ theme }: PluginSurfaceProps) {
             <SettingsAction label={t("allDefaults")} actionLabel={t("defaultValues")} onPress={() => setPrefs({ ...DEFAULT_PREFS, hosts: prefs.hosts, toggled: prefs.toggled })} />
           </SettingsCard>
         </SettingsSection>
+        <SettingsSection title={t("demoSection")}>
+          <SettingsCard>
+            <Toggle label={t("demoData")} hint={t("demoHint")} value={prefs.demo} onChange={(v) => setPrefs({ demo: v })} />
+          </SettingsCard>
+        </SettingsSection>
       </View>
     </ScrollView>
   );

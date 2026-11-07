@@ -68,6 +68,11 @@ export const messages = defineTranslations({
       defaultValues: "Default values",
       allSettings: "All settings",
       open: "Open",
+      demoBanner: "Demo",
+      demoCommand: "Agent Tree: demo mode",
+      demoData: "Demo data",
+      demoHint: "Shows synthetic agents instead of yours, for screenshots. Nothing real is read or displayed.",
+      demoSection: "Screenshots",
     },
     fr: {
       title: "Arbre d'agents",
@@ -134,6 +139,11 @@ export const messages = defineTranslations({
       defaultValues: "Valeurs d'origine",
       allSettings: "Tous les réglages",
       open: "Ouvrir",
+      demoBanner: "Démo",
+      demoCommand: "Arbre d'agents : mode démo",
+      demoData: "Données de démo",
+      demoHint: "Affiche des agents synthétiques à la place des vôtres, pour les captures d'écran. Rien de réel n'est lu ni affiché.",
+      demoSection: "Captures d'écran",
     },
   },
 });

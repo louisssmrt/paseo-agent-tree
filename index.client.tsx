@@ -1,6 +1,6 @@
 import type { PluginClientContext, PluginSidebarItemProps } from "@getpaseo/plugin/client";
 import { messages } from "./client/i18n";
-import { getPrefs, useArbrePrefs } from "./client/prefs";
+import { getPrefs, toggleDemo, useArbrePrefs } from "./client/prefs";
 import { injectEarly, installReplace } from "./client/web";
 
 // Dès l'évaluation du module, avant tout hook et avant que la barre n'existe : pas de flash de la liste native.
@@ -38,6 +38,16 @@ export default function contribute(client: PluginClientContext) {
     context: "global",
     onSelect({ openSettings }) {
       openSettings("settings");
+    },
+  });
+  client.addCommandCenterItem({
+    id: "toggle-demo",
+    title: messages.message("demoCommand"),
+    icon: "Presentation",
+    keywords: ["demo", "démo", "screenshot", "capture"],
+    context: "global",
+    onSelect() {
+      toggleDemo();
     },
   });
   // Web et bureau : masquer la liste native tant que le réglage est actif ET que l'arbre est dans la barre.

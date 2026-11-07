@@ -46,6 +46,11 @@ function change(patch: (current: ArbrePrefs) => ArbrePrefs): void {
   void flush();
 }
 
+/** Bascule le mode démo (Command Center). */
+export function toggleDemo(): void {
+  change((p) => ({ ...p, demo: !p.demo }));
+}
+
 export function getPrefs(): ArbrePrefs {
   return state;
 }
